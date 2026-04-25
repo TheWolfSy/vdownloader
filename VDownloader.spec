@@ -1,8 +1,10 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 import os
+import glob
 
 project_root = os.path.abspath('VDownloader')
+ffmpeg_bin = r'C:\ffmpeg\bin'
 
 a = Analysis(
     ['VDownloader/main.py'],
@@ -11,8 +13,12 @@ a = Analysis(
         os.path.dirname(project_root),
     ],
     binaries=[
-        (r'C:\ffmpeg\bin\ffmpeg.exe', 'ffmpeg\\bin'),
-        (r'C:\ffmpeg\bin\ffprobe.exe', 'ffmpeg\\bin'),
+        (os.path.join(ffmpeg_bin, 'ffmpeg.exe'), 'ffmpeg'),
+        (os.path.join(ffmpeg_bin, 'ffprobe.exe'), 'ffmpeg'),
+    ] + [
+        (os.path.join(ffmpeg_bin, f), 'ffmpeg')
+        for f in os.listdir(ffmpeg_bin)
+        if f.endswith('.dll')
     ],
     datas=[
         (os.path.join(project_root, 'gui'), 'gui'),

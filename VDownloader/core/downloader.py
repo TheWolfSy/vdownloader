@@ -1,7 +1,15 @@
 import os
+import sys
 import yt_dlp
 from PyQt6.QtCore import QThread, pyqtSignal
 
+def get_ffmpeg_path():
+    if getattr(sys, 'frozen', False):
+        base_path = sys._MEIPASS
+        bundled_ffmpeg = os.path.join(base_path, 'ffmpeg')
+        if os.path.exists(bundled_ffmpeg):
+            return bundled_ffmpeg
+    return os.path.join(os.path.dirname(sys.executable), 'ffmpeg')
 
 class DownloadThread(QThread):
     progress = pyqtSignal(float, str, str)
@@ -17,7 +25,7 @@ class DownloadThread(QThread):
         self.cookies = cookies
         self._cancelled = False
         
-        ffmpeg_path = r"C:\ffmpeg\bin"
+        ffmpeg_path = get_ffmpeg_path()
         if os.path.exists(ffmpeg_path):
             os.environ['PATH'] = ffmpeg_path + os.pathsep + os.environ.get('PATH', '')
     
