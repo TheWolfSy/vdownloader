@@ -1,4 +1,4 @@
-FROM kivy/kivy:2.3.0
+FROM kivy/buildozer
 
 WORKDIR /app
 
