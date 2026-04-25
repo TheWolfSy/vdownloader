@@ -24,17 +24,21 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y openjdk-17-jdk
     
-    - name: Install Python dependencies
+    - name: Install python-for-android
       run: |
-        pip install buildozer==1.5.0
-        pip install "kivy>=2.3.0"
+        pip install --upgrade pip setuptools wheel
+        pip install python-for-android
+    
+    - name: Install project dependencies
+      run: |
         pip install yt-dlp requests jnius plyer
     
     - name: Build APK
+      env:
+        COPY_OPENS_SOURCE: 1
       run: |
         cd android
-        buildozer android debug
-        ls -la bin/
+        p4a apk --private创意 . --appname VDownloader --package org.vdownloader.app --sdk 21 --requirements python3,kivy,yt-dlp,requests,jnius,plyer --debug
     
     - name: Upload APK
       uses: actions/upload-artifact@v4
