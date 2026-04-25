@@ -32,15 +32,31 @@ class Downloader:
         self._running = False
 
     def _run(self):
-        ydl_opts = {
-            'format': self.format_id,
-            'outtmpl': os.path.join(self.output_path, '%(title)s.%(ext)s'),
-            'progress_hooks': [self._progress_hook],
-            'merge_output_format': 'mp4',
-            'postprocessors': [{
-                'key': 'FFmpegMetadata',
-            }],
-        }
+    format_id = self.format_id.lower()
+    is_audio_only = ('audio' in format_id or 
+                    'mp3' in format_id or 
+                    'bestaudio' in format_id or
+                    format_id == 'best' and 'video' not in format_id)
+
+    ydl_opts = {
+        'format': self.format_id,
+        'outtmpl': os.path.join(self.output_path, '%(title)s.%(ext)s'),
+        'progress_hooks': [self._progress_hook],
+    }
+
+    if is_audio_only:
+        ydl_opts['format'] = 'bestaudio/best'
+        ydl_opts['postprocessors'] = [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }]
+        ydl_opts['outtmpl'] = os.path.join(self.output_path, '%(title)s.mp3')
+    else:
+        ydl_opts['merge_output_format'] = 'mp4'
+        ydl_opts['postprocessors'] = [{
+            'key': 'FFmpegMetadata',
+        }]
 
         if self.proxy:
             ydl_opts['proxy'] = self.proxy

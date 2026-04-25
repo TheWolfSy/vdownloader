@@ -404,7 +404,7 @@ class VDownloaderGUI(BoxLayout):
                 else:
                     label = f"{height}p"
             elif ext == 'mp3' or ext == 'm4a':
-                label = "Audio"
+                label = "MP3"
             else:
                 label = ext.upper()
 
