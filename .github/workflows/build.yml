@@ -1,40 +1,25 @@
-# Build APK for VDownloader Android App
-
-on:
-  push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
+name: Build
+on: [push, pull_request]
 
 jobs:
-  build:
+  # Build job. Builds app for Android with Buildozer
+  build-android:
+    name: Build for Android
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    
-    - name: Build Android APK using Kivy Docker
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: ./Dockerfile
-        push: false
-        load: true
-        tags: vdownloader:latest
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-    
-    - name: Run container and extract APK
-      run: |
-        docker run --rm -v $PWD/output:/output vdownloader:latest cp /root/.buildozer/bin/*.apk /output/
-        ls -la output/
-    
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: VDownloader-APK
-        path: output/*.apk
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          workdir: test_app
+          buildozer_version: stable
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: ${{ steps.buildozer.outputs.filename }}
