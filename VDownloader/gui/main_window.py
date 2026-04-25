@@ -520,7 +520,9 @@ class MainWindow(QMainWindow):
             
             quality_map[label] = format_id
         
-        for idx, (label, format_id) in enumerate(quality_map.items()):
+        quality_items = list(quality_map.items())[:5]
+        
+        for idx, (label, format_id) in enumerate(quality_items):
             btn = QPushButton(label)
             btn.setFixedWidth(80)
             btn.setCursor(Qt.CursorShape.PointingHandCursor)

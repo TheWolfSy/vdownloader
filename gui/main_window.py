@@ -449,9 +449,11 @@ class VDownloaderGUI(BoxLayout):
 
             quality_map[label] = format_id
 
+        quality_items = list(quality_map.items())[:5]
+
         default_colors = ['#6C63FF', '#00D9FF', '#00C853', '#FF9800', '#FF5252']
 
-        for idx, (label, format_id) in enumerate(quality_map.items()):
+        for idx, (label, format_id) in enumerate(quality_items):
             btn = Button(
                 text=label,
                 size_hint_x=None,
