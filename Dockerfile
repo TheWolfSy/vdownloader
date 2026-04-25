@@ -1,4 +1,4 @@
-FROM kivy/kivy:2.3.0-python3.11-sd
+FROM kivy/kivy:2.3.0
 
 WORKDIR /app
 
