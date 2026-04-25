@@ -28,6 +28,10 @@ ios.kivy_ios_url = https://github.com/kivy/kivy-ios
 ios.kivy_ios_branch = master
 ios.ios_deploy_target = 2.14
 
+android.sdk_location = /home/runner/android-sdk
+android.ndk_api = 21
+android.allow_debug_apis = 1
+
 [buildozer]
 
 log_level = 2

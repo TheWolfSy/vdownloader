@@ -40,6 +40,12 @@ jobs:
         yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
         $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
         echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+        
+        # Create symlink for Buildozer
+        mkdir -p /home/runner/.buildozer/android/platform/android-sdk
+        ln -sf /home/runner/android-sdk/build-tools /home/runner/.buildozer/android/platform/android-sdk/build-tools
+        ln -sf /home/runner/android-sdk/platforms /home/runner/.buildozer/android/platform/android-sdk/platforms
+        ln -sf /home/runner/android-sdk/platform-tools /home/runner/.buildozer/android/platform/android-sdk/platform-tools
     
     - name: Install Buildozer and Kivy
       run: |
@@ -50,9 +56,8 @@ jobs:
     
     - name: Build with Buildozer
       working-directory: ./android
-      env:
-        ANDROID_HOME: $HOME/android-sdk
       run: |
+        export ANDROID_HOME=/home/runner/android-sdk
         buildozer android debug
         ls -la bin/
     
