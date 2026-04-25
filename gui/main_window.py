@@ -23,73 +23,63 @@ from utils.cookies import CookieManager
 from utils.notifications import show_download_complete, show_download_error
 
 COLORS = {
-    'background': '#0D0D0D',
-    'card': '#1A1A2E',
-    'primary': '#6C63FF',
-    'accent': '#00D9FF',
-    'success': '#00C853',
-    'error': '#FF5252',
-    'text': '#FFFFFF',
-    'text_secondary': '#A0A0A0',
-    'border': '#2D2D44',
+    'background': '#0A0A0A',
+    'surface': '#141414',
+    'surface_elevated': '#1F1F1F',
+    'primary': '#FFFFFF',
+    'primary_dim': '#B3B3B3',
+    'accent': '#E0E0E0',
+    'text': '#FAFAFA',
+    'text_secondary': '#808080',
+    'border': '#2A2A2A',
+    'success': '#4ADE80',
+    'error': '#F87171',
 }
 
 KV = """
 <VDownloaderGUI>:
     orientation: 'vertical'
-    padding: dp(15)
-    spacing: dp(12)
-    bg: '#0D0D0D'
+    padding: dp(16)
+    spacing: dp(16)
+    bg: '#0A0A0A'
+
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: None
+        height: dp(60)
+        justify: 'center'
+
+        Label:
+            text: 'V'
+            font_size: '32sp'
+            bold: True
+            color: '#FFFFFF'
+            size_hint_x: None
+            width: dp(40)
+
+        Label:
+            text: 'DOWNLOADER'
+            font_size: '18sp'
+            bold: True
+            letter-spacing: '4'
+            color: '#FFFFFF'
 
     BoxLayout:
         orientation: 'horizontal'
         size_hint_y: None
         height: dp(50)
-        justify: 'center'
-
-        Label:
-            text: '⬡'
-            font_size: '28sp'
-            color: '#6C63FF'
-            size_hint_x: None
-            width: dp(40)
-
-        Label:
-            text: 'VDownloader'
-            font_size: '24sp'
-            bold: True
-            color: '#FFFFFF'
-
-        Label:
-            text: '⬡'
-            font_size: '28sp'
-            color: '#00D9FF'
-            size_hint_x: None
-            width: dp(40)
-
-    BoxLayout:
-        orientation: 'horizontal'
-        size_hint_y: None
-        height: dp(55)
-        spacing: dp(8)
-
-        Button:
-            text: '🔗'
-            size_hint_x: None
-            width: dp(45)
-            background_normal: ''
-            background_color: '#1A1A2E'
-            color: '#A0A0A0'
+        spacing: dp(10)
 
         TextInput:
             id: url_input
-            hint_text: 'أدخل رابط الفيديو...'
+            hint_text: 'Paste video URL'
             multiline: False
-            background_color: '#1A1A2E'
-            foreground_color: '#FFFFFF'
-            cursor_color: '#6C63FF'
-            padding_x: dp(15)
-            padding_y: dp(15)
+            background_color: '#141414'
+            foreground_color: '#FAFAFA'
+            cursor_color: '#FFFFFF'
+            padding_x: dp(16)
+            padding_y: dp(14)
+            font_size: '14sp'
 
         Button:
             id: paste_btn
@@ -98,8 +88,8 @@ KV = """
             width: dp(45)
             on_press: root.paste_url()
             background_normal: ''
-            background_color: '#1A1A2E'
-            color: '#A0A0A0'
+            background_color: '#141414'
+            color: '#808080'
 
     BoxLayout:
         id: preview_box
@@ -108,16 +98,25 @@ KV = """
         height: dp(0)
         opacity: 0
         disabled: True
+        spacing: dp(12)
 
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
-            height: dp(120)
+            height: dp(80)
             spacing: dp(12)
+            padding: dp(12)
+            canvas:
+                Color:
+                    rgba: 0.039, 0.039, 0.039, 1
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [12]
 
             BoxLayout:
                 size_hint_x: None
-                width: dp(160)
+                width: dp(100)
                 Image:
                     id: thumbnail
                     source: ''
@@ -126,35 +125,30 @@ KV = """
 
             BoxLayout:
                 orientation: 'vertical'
-                spacing: dp(8)
-                padding: dp(10)
+                spacing: dp(4)
+                padding: dp(4)
 
                 Label:
                     id: title_label
-                    text: 'العنوان'
-
-                    font_size: '16sp'
-                    color: '#FFFFFF'
+                    text: 'Title'
+                    font_size: '13sp'
+                    color: '#FAFAFA'
                     text_size: self.width, None
                     halign: 'right'
+                    shorten: True
+                    max_lines: 2
 
                 Label:
                     id: duration_label
-                    text: 'المدة: --'
-                    font_size: '14sp'
-                    color: '#A0A0A0'
+                    text: '--:--'
+                    font_size: '12sp'
+                    color: '#808080'
 
                 Label:
                     id: size_label
-                    text: 'الحجم: --'
-                    font_size: '14sp'
-                    color: '#A0A0A0'
-
-                Label:
-                    id: format_label
-                    text: 'الصيغة: --'
-                    font_size: '14sp'
-                    color: '#00D9FF'
+                    text: '--'
+                    font_size: '12sp'
+                    color: '#808080'
 
         BoxLayout:
             orientation: 'horizontal'
@@ -163,13 +157,13 @@ KV = """
             spacing: dp(8)
 
             Button:
-                text: '🔄'
+                text: '↻'
                 size_hint_x: None
                 width: dp(40)
                 on_press: root.analyze_video()
                 background_normal: ''
-                background_color: '#1A1A2E'
-                color: '#6C63FF'
+                background_color: '#141414'
+                color: '#FFFFFF'
 
     BoxLayout:
         id: quality_box
@@ -182,7 +176,6 @@ KV = """
 
     ScrollView:
         do_scroll_x: True
-        do_scroll_y: False
         bar_width: 0
 
         BoxLayout:
@@ -204,61 +197,47 @@ KV = """
             id: progress_bar
             max: 100
             value: 0
-            height: dp(8)
-            background_color: '#1A1A2E'
-            color: '#6C63FF'
+            height: dp(4)
+            background_color: '#1F1F1F'
+            color: '#FFFFFF'
 
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
-            height: dp(25)
+            height: dp(20)
 
             Label:
                 id: percent_label
                 text: '0%'
-                color: '#6C63FF'
+                color: '#FFFFFF'
 
             Label:
                 id: speed_label
                 text: ''
-                color: '#A0A0A0'
-
-            Label:
-                id: time_label
-                text: ''
-                color: '#A0A0A0'
+                color: '#808080'
 
     BoxLayout:
         orientation: 'horizontal'
         size_hint_y: None
-        height: dp(50)
+        height: dp(48)
         spacing: dp(12)
 
         Button:
             id: download_btn
-            text: '▶ تحميل'
+            text: '↓ Download'
             on_press: root.start_download()
             background_normal: ''
-            background_color: '#6C63FF'
-            color: '#FFFFFF'
+            background_color: '#FFFFFF'
+            color: '#0A0A0A'
             bold: True
-
-        Button:
-            id: folder_btn
-            text: '📁'
-            size_hint_x: None
-            width: dp(50)
-            on_press: root.choose_folder()
-            background_normal: ''
-            background_color: '#1A1A2E'
-            color: '#A0A0A0'
+            font_size: '14sp'
 
     Label:
         id: status_label
-        text: 'جاهز للتحميل'
+        text: 'Ready'
         size_hint_y: None
-        height: dp(30)
-        color: '#A0A0A0'
+        height: dp(24)
+        color: '#808080'
         font_size: '12sp'
 
     Widget:
@@ -268,41 +247,40 @@ KV = """
         orientation: 'horizontal'
         size_hint_y: None
         height: dp(50)
-        spacing: dp(20)
+        spacing: dp(32)
         justify: 'center'
 
         Button:
-            text: '🏠'
+            text: '⬤'
             size_hint_x: None
-            width: dp(50)
+            width: dp(40)
             on_press: root.go_home()
             background_normal: ''
-            background_color: '#6C63FF'
-            color: '#FFFFFF'
+            background_color: '#FFFFFF'
+            color: '#0A0A0A'
 
         Button:
-            text: '📥'
+            text: '⬤'
             size_hint_x: None
-            width: dp(50)
+            width: dp(40)
             on_press: root.go_history()
             background_normal: ''
-            background_color: '#1A1A2E'
-            color: '#A0A0A0'
+            background_color: '#1F1F1F'
+            color: '#1F1F1F'
 
         Button:
-            text: '⚙️'
+            text: '⚙'
             size_hint_x: None
-            width: dp(50)
+            width: dp(40)
             on_press: root.open_settings()
             background_normal: ''
-            background_color: '#1A1A2E'
-            color: '#A0A0A0'
+            background_color: '#1F1F1F'
+            color: '#808080'
 """
 
 
 class VDownloaderGUI(BoxLayout):
     url_input = ObjectProperty(None)
-    analyze_btn = ObjectProperty(None)
     download_btn = ObjectProperty(None)
     progress_bar = ObjectProperty(None)
     status_label = ObjectProperty(None)
@@ -310,13 +288,11 @@ class VDownloaderGUI(BoxLayout):
     title_label = ObjectProperty(None)
     duration_label = ObjectProperty(None)
     size_label = ObjectProperty(None)
-    format_label = ObjectProperty(None)
     thumbnail = ObjectProperty(None)
     quality_box = ObjectProperty(None)
     preview_box = ObjectProperty(None)
     progress_box = ObjectProperty(None)
     percent_label = ObjectProperty(None)
-    time_label = ObjectProperty(None)
 
     info_hidden = BooleanProperty(True)
     default_save_path = ""
@@ -348,10 +324,10 @@ class VDownloaderGUI(BoxLayout):
     def analyze_video(self):
         url = self.url_input.text.strip()
         if not url:
-            self.status_label.text = "يرجى إدخال رابط الفيديو"
+            self.status_label.text = "Enter video URL"
             return
 
-        self.status_label.text = "جاري فحص الفيديو..."
+        self.status_label.text = "Analyzing..."
         self.download_btn.disabled = True
 
         thread = threading.Thread(target=self._analyze_worker, args=(url,))
@@ -369,39 +345,35 @@ class VDownloaderGUI(BoxLayout):
 
     def _on_analyze_finished(self, info):
         self.video_info = info
-        self.title_label.text = info.get('title', 'غير معروف')[:50]
+        self.title_label.text = info.get('title', 'Unknown')[:50]
 
         duration = info.get('duration', 0)
         minutes = duration // 60
         seconds = duration % 60
-        self.duration_label.text = f"المدة: {minutes}:{seconds:02d}"
+        self.duration_label.text = f"{minutes}:{seconds:02d}"
 
         filesize = info.get('filesize', 0)
         if filesize > 1024 * 1024 * 1024:
-            self.size_label.text = f"الحجم: {filesize / (1024**3):.1f} GB"
+            self.size_label.text = f"{filesize / (1024**3):.1f} GB"
         elif filesize > 1024 * 1024:
-            self.size_label.text = f"الحجم: {filesize / (1024**2):.1f} MB"
-        elif filesize > 1024:
-            self.size_label.text = f"الحجم: {filesize / 1024:.1f} KB"
+            self.size_label.text = f"{filesize / (1024**2):.1f} MB"
         else:
-            self.size_label.text = "الحجم: --"
+            self.size_label.text = f"{filesize / 1024:.0f} KB"
 
-        self.format_label.text = f"الصيغة: {info.get('ext', 'mp4')}"
-
-        self._build_quality_buttons(info.get('formats', []))
+        self._build_quality_buttons(info.get('formats', [])[:5])
 
         self.info_hidden = False
-        self.preview_box.height = dp(180)
+        self.preview_box.height = dp(120)
         self.preview_box.opacity = 1
         self.preview_box.disabled = False
 
-        self.quality_box.height = dp(40)
+        self.quality_box.height = dp(44)
         self.quality_box.opacity = 1
         self.quality_box.disabled = False
 
         self.download_btn.disabled = False
-        self.status_label.text = "اختر الجودة ثم اضغط تحميل"
-        self.download_btn.text = "▶ تحميل"
+        self.status_label.text = "Select quality & download"
+        self.download_btn.text = "↓ Download"
 
     def _build_quality_buttons(self, formats):
         quality_box = self.ids.quality_scroll
@@ -424,67 +396,49 @@ class VDownloaderGUI(BoxLayout):
                 if height >= 2160:
                     label = "4K"
                 elif height >= 1080:
-                    label = "FHD"
+                    label = "1080p"
                 elif height >= 720:
-                    label = "HD"
+                    label = "720p"
                 elif height >= 480:
-                    label = "SD"
-                elif height >= 360:
-                    label = "360p"
+                    label = "480p"
                 else:
                     label = f"{height}p"
             elif ext == 'mp3' or ext == 'm4a':
-                label = "Mp3"
+                label = "Audio"
             else:
                 label = ext.upper()
-
-            if filesize > 0:
-                if filesize > 1024 * 1024 * 1024:
-                    size_str = f"{filesize / (1024**3):.1f}G"
-                elif filesize > 1024 * 1024:
-                    size_str = f"{filesize / (1024**2):.1f}M"
-                else:
-                    size_str = f"{filesize / 1024:.0f}K"
-                label += f" ({size_str})"
 
             quality_map[label] = format_id
 
         quality_items = list(quality_map.items())[:5]
 
-        default_colors = ['#6C63FF', '#00D9FF', '#00C853', '#FF9800', '#FF5252']
-
         for idx, (label, format_id) in enumerate(quality_items):
             btn = Button(
                 text=label,
                 size_hint_x=None,
-                width=dp(90),
+                width=dp(75),
                 on_press=lambda x, fid=format_id, lbl=label: self._select_quality(fid, lbl)
             )
             btn.quality_id = format_id
-            btn.quality_label = label
 
             if idx == 0:
                 btn.background_normal = ''
-                btn.background_color = '#6C63FF'
-                btn.color = '#FFFFFF'
+                btn.background_color = '#FFFFFF'
+                btn.color = '#0A0A0A'
                 self.selected_format = format_id
                 self.selected_label = label
             else:
                 btn.background_normal = ''
-                btn.background_color = '#1A1A2E'
-                btn.color = '#A0A0A0'
+                btn.background_color = '#1F1F1F'
+                btn.color = '#808080'
 
             quality_box.add_widget(btn)
 
         if not quality_map:
-            btn = Button(
-                text="الأفضل",
-                size_hint_x=None,
-                width=dp(90)
-            )
+            btn = Button(text="Auto", size_hint_x=None, width=dp(75))
             btn.background_normal = ''
-            btn.background_color = '#6C63FF'
-            btn.color = '#FFFFFF'
+            btn.background_color = '#FFFFFF'
+            btn.color = '#0A0A0A'
             quality_box.add_widget(btn)
             self.selected_format = "best"
 
@@ -495,22 +449,18 @@ class VDownloaderGUI(BoxLayout):
             if hasattr(child, 'quality_id'):
                 if child.quality_id == format_id:
                     child.background_normal = ''
-                    child.background_color = '#6C63FF'
-                    child.color = '#FFFFFF'
+                    child.background_color = '#FFFFFF'
+                    child.color = '#0A0A0A'
                     self.selected_format = format_id
                     self.selected_label = label
                 else:
                     child.background_normal = ''
-                    child.background_color = '#1A1A2E'
-                    child.color = '#A0A0A0'
+                    child.background_color = '#1F1F1F'
+                    child.color = '#808080'
 
     def _on_analyze_error(self, error):
-        self.status_label.text = f"خطأ: {error}"
+        self.status_label.text = f"Error: {error}"
         self.download_btn.disabled = True
-
-    def choose_folder(self):
-        from kivy.uix.filechooser import FileChooserListView
-        pass
 
     def start_download(self):
         if not self.video_info:
@@ -521,11 +471,11 @@ class VDownloaderGUI(BoxLayout):
         proxy = self.proxy_manager.get_selected_proxy()
         cookies = self.cookie_manager.get_cookies()
 
-        self.download_btn.text = "⏹ إيقاف"
+        self.download_btn.text = "■ Stop"
         self.download_btn.bind(on_press=lambda x: self.cancel_download())
-        self.status_label.text = "جاري التحميل..."
+        self.status_label.text = "Downloading..."
 
-        self.progress_box.height = dp(80)
+        self.progress_box.height = dp(60)
         self.progress_box.opacity = 1
         self.progress_box.disabled = False
 
@@ -545,13 +495,12 @@ class VDownloaderGUI(BoxLayout):
         self.progress_bar.value = percent
         self.percent_label.text = f"{int(percent)}%"
         self.speed_label.text = speed
-        self.status_label.text = f"جاري التحميل... {int(percent)}%"
+        self.status_label.text = f"Downloading {int(percent)}%"
 
     def _on_finished(self, filepath, title):
         self.progress_bar.value = 100
-        self.percent_label.text = "100%"
-        self.status_label.text = "تم التحميل بنجاح!"
-        self.download_btn.text = "▶ تحميل"
+        self.status_label.text = "Download complete"
+        self.download_btn.text = "↓ Download"
         self.download_btn.unbind(on_press=self.cancel_download)
         self.download_btn.bind(on_press=lambda x: self.start_download())
         self.download_btn.disabled = False
@@ -563,8 +512,8 @@ class VDownloaderGUI(BoxLayout):
         show_download_complete(title, filepath)
 
     def _on_error(self, error):
-        self.status_label.text = f"خطأ: {error}"
-        self.download_btn.text = "▶ تحميل"
+        self.status_label.text = f"Error: {error}"
+        self.download_btn.text = "↓ Download"
         self.download_btn.unbind(on_press=self.cancel_download)
         self.download_btn.bind(on_press=lambda x: self.start_download())
         self.download_btn.disabled = False
@@ -578,9 +527,9 @@ class VDownloaderGUI(BoxLayout):
     def cancel_download(self):
         if self.downloader:
             self.downloader.cancel()
-            self.status_label.text = "تم الإلغاء"
+            self.status_label.text = "Cancelled"
             self.progress_bar.value = 0
-            self.download_btn.text = "▶ تحميل"
+            self.download_btn.text = "↓ Download"
             self.download_btn.disabled = False
 
     def go_home(self):
