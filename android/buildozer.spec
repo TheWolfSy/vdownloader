@@ -22,7 +22,7 @@ fullscreen = 0
 android.permissions = INTERNET,ACCESS_NETWORK_STATE,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
 android.api = 21
 android.minapi = 21
-android.arch = arm64-v8a
+android.archs = arm64-v8a,armeabi-v7a
 
 ios.kivy_ios_url = https://github.com/kivy/kivy-ios
 ios.kivy_ios_branch = master
