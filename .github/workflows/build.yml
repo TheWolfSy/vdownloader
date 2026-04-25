@@ -19,26 +19,43 @@ jobs:
       with:
         python-version: '3.10'
     
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y openjdk-17-jdk
+        sudo apt-get install -y unzip wget
+        echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+        echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
     
-    - name: Install python-for-android
+    - name: Download Android SDK
+      run: |
+        mkdir -p $HOME/android-sdk/cmdline-tools
+        cd $HOME/android-sdk/cmdline-tools
+        wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
+        unzip -q cmdline-tools.zip
+        mv cmdline-tools latest
+        yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
+        $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "ndk;26a"
+    
+    - name: Install Buildozer
       run: |
         pip install --upgrade pip setuptools wheel
-        pip install python-for-android
+        pip install buildozer==1.5.0
     
-    - name: Install project dependencies
+    - name: Install Kivy
       run: |
-        pip install yt-dlp requests jnius plyer
+        pip install "kivy>=2.3.0"
     
-    - name: Build APK
-      env:
-        COPY_OPENS_SOURCE: 1
+    - name: Build with Buildozer
+      working-directory: ./android
       run: |
-        cd android
-        p4a apk --private创意 . --appname VDownloader --package org.vdownloader.app --sdk 21 --requirements python3,kivy,yt-dlp,requests,jnius,plyer --debug
+        buildozer android debug
+        ls -la bin/
     
     - name: Upload APK
       uses: actions/upload-artifact@v4
