@@ -4,10 +4,14 @@ from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLineEdit, QPushButton, QLabel, QProgressBar, QRadioButton,
     QButtonGroup, QComboBox, QFileDialog, QMessageBox, QFrame,
-    QCheckBox, QGroupBox, QScrollArea, QSizePolicy
+    QCheckBox, QGroupBox, QScrollArea, QSizePolicy, QStackedWidget,
+    QTextEdit
 )
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, QUrl, QTimer
-from PyQt6.QtGui import QIcon, QAction, QFont, QLinearGradient, QColor, QPainter
+from PyQt6.QtGui import (
+    QIcon, QAction, QFont, QLinearGradient, QColor, QPainter,
+    QPalette, QBrush
+)
 
 from core.video_info import VideoInfo
 from core.downloader import DownloadThread
@@ -16,13 +20,27 @@ from utils.cookies import CookieManager
 from utils.proxy import ProxyManager
 
 
+COLORS = {
+    'background': '#0D0D0D',
+    'card': '#1A1A2E',
+    'primary': '#6C63FF',
+    'accent': '#00D9FF',
+    'success': '#00C853',
+    'error': '#FF5252',
+    'text': '#FFFFFF',
+    'text_secondary': '#A0A0A0',
+    'border': '#2D2D44',
+}
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.video_info = None
         self.download_thread = None
         self.cookie_manager = CookieManager()
-        self.proxy_manager =ProxyManager()
+        self.proxy_manager = ProxyManager()
+        self.selected_format = "best"
         
         self.init_ui()
         self.check_ffmpeg()
@@ -30,7 +48,6 @@ class MainWindow(QMainWindow):
         self._check_startup_updates()
     
     def _check_startup_updates(self):
-        import json
         from pathlib import Path
         
         config_dir = Path.home() / ".vdownloader"
@@ -55,235 +72,320 @@ class MainWindow(QMainWindow):
     
     def init_ui(self):
         self.setWindowTitle("VDownloader")
-        self.setMinimumSize(600, 700)
-        self.setStyleSheet("""
-            QMainWindow {
-                background-color: #1e1e2e;
-            }
-            QLabel {
-                color: #cdd6f4;
-            }
-            QLineEdit {
-                background-color: #313244;
-                border: 1px solid #45475a;
+        self.setMinimumSize(500, 650)
+        self.setStyleSheet(f"""
+            QMainWindow {{
+                background-color: {COLORS['background']};
+            }}
+            QLabel {{
+                color: {COLORS['text']};
+            }}
+            QLineEdit {{
+                background-color: {COLORS['card']};
+                border: 1px solid {COLORS['border']};
                 border-radius: 8px;
-                padding: 10px;
-                color: #cdd6f4;
+                padding: 12px;
+                color: {COLORS['text']};
                 font-size: 14px;
-            }
-            QLineEdit:focus {
-                border: 1px solid #89b4fa;
-            }
-            QPushButton {
-                background-color: #89b4fa;
+            }}
+            QLineEdit:focus {{
+                border: 1px solid {COLORS['primary']};
+            }}
+            QLineEdit:placeholder {{
+                color: {COLORS['text_secondary']};
+            }}
+            QPushButton {{
+                background-color: {COLORS['primary']};
                 border: none;
                 border-radius: 8px;
-                padding: 10px 20px;
-                color: #1e1e2e;
+                padding: 12px 20px;
+                color: {COLORS['text']};
                 font-weight: bold;
                 font-size: 14px;
-            }
-            QPushButton:hover {
-                background-color: #b4befe;
-            }
-            QPushButton:pressed {
-                background-color: #74c7ec;
-            }
-            QPushButton:disabled {
-                background-color: #45475a;
-                color: #6c7086;
-            }
-            QProgressBar {
-                background-color: #313244;
+            }}
+            QPushButton:hover {{
+                background-color: #7C73FF;
+            }}
+            QPushButton:pressed {{
+                background-color: #5C53EF;
+            }}
+            QPushButton:disabled {{
+                background-color: {COLORS['border']};
+                color: {COLORS['text_secondary']};
+            }}
+            QProgressBar {{
+                background-color: {COLORS['card']};
                 border-radius: 8px;
                 text-align: center;
-                color: #cdd6f4;
+                color: {COLORS['text']};
                 border: none;
-            }
-            QProgressBar::chunk {
-                background-color: #89b4fa;
+                height: 12px;
+            }}
+            QProgressBar::chunk {{
+                background-color: {COLORS['primary']};
                 border-radius: 8px;
-            }
-            QRadioButton {
-                color: #cdd6f4;
+            }}
+            QRadioButton {{
+                color: {COLORS['text']};
                 padding: 5px;
-            }
-            QRadioButton::indicator {
-                width: 18px;
-                height: 18px;
-            }
-            QCheckBox {
-                color: #cdd6f4;
-            }
-            QGroupBox {
-                border: 1px solid #45475a;
-                border-radius: 8px;
+            }}
+            QCheckBox {{
+                color: {COLORS['text']};
+            }}
+            QGroupBox {{
+                border: 1px solid {COLORS['border']};
+                border-radius: 12px;
                 margin-top: 10px;
                 padding-top: 10px;
-                color: #cdd6f4;
-            }
-            QGroupBox::title {
+                color: {COLORS['text']};
+                font-size: 14px;
+            }}
+            QGroupBox::title {{
                 subcontrol-origin: margin;
                 left: 10px;
                 padding: 0 5px;
-            }
-            QComboBox {
-                background-color: #313244;
-                border: 1px solid #45475a;
-                border-radius: 8px;
-                padding: 8px;
-                color: #cdd6f4;
-            }
-            QComboBox::drop-down {
+            }}
+            QScrollArea {{
+                background-color: transparent;
                 border: none;
-            }
-            QComboBox::down-arrow {
-                image: none;
-                border-left: 5px solid transparent;
-                border-right: 5px solid transparent;
-                border-top: 5px solid #cdd6f4;
-            }
+            }}
         """)
         
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         
         main_layout = QVBoxLayout(central_widget)
-        main_layout.setSpacing(15)
-        main_layout.setContentsMargins(20, 20, 20, 20)
+        main_layout.setSpacing(12)
+        main_layout.setContentsMargins(15, 15, 15, 15)
         
-        title_label = QLabel("VDownloader")
-        title_label.setStyleSheet("""
-            font-size: 28px;
+        title_layout = QHBoxLayout()
+        title_label = QLabel("⬡ VDownloader ⬡")
+        title_label.setStyleSheet(f"""
+            font-size: 24px;
             font-weight: bold;
-            color: #89b4fa;
-            padding-bottom: 10px;
+            color: {COLORS['primary']};
         """)
-        main_layout.addWidget(title_label)
+        title_layout.addStretch()
+        title_layout.addWidget(title_label)
+        title_layout.addStretch()
+        main_layout.addLayout(title_layout)
+        
+        url_layout = QHBoxLayout()
+        url_layout.setSpacing(8)
         
         self.url_input = QLineEdit()
-        self.url_input.setPlaceholderText("رابط الفيديو...")
-        main_layout.addWidget(self.url_input)
+        self.url_input.setPlaceholderText("أدخل رابط الفيديو...")
+        url_layout.addWidget(self.url_input, 1)
         
-        self.analyze_btn = QPushButton("فحص الفيديو")
+        self.paste_btn = QPushButton("📋")
+        self.paste_btn.setFixedWidth(45)
+        self.paste_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {COLORS['card']};
+                color: {COLORS['text_secondary']};
+            }}
+            QPushButton:hover {{
+                background-color: {COLORS['border']};
+            }}
+        """)
+        self.paste_btn.clicked.connect(self.paste_url)
+        url_layout.addWidget(self.paste_btn)
+        
+        main_layout.addLayout(url_layout)
+        
+        self.analyze_btn = QPushButton("🔄 فحص الفيديو")
+        self.analyze_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {COLORS['card']};
+                color: {COLORS['primary']};
+            }}
+            QPushButton:hover {{
+                background-color: {COLORS['border']};
+            }}
+        """)
         self.analyze_btn.clicked.connect(self.analyze_video)
         main_layout.addWidget(self.analyze_btn)
         
         self.info_frame = QFrame()
-        self.info_frame.setStyleSheet("""
-            QFrame {
-                background-color: #313244;
+        self.info_frame.setStyleSheet(f"""
+            QFrame {{
+                background-color: {COLORS['card']};
                 border-radius: 12px;
                 padding: 15px;
-            }
+            }}
         """)
         info_layout = QVBoxLayout(self.info_frame)
         info_layout.setSpacing(10)
         
         self.title_label = QLabel("العنوان: --")
+        self.title_label.setStyleSheet("font-size: 14px; font-weight: bold;")
         info_layout.addWidget(self.title_label)
         
+        details_layout = QHBoxLayout()
+        
         self.duration_label = QLabel("المدة: --")
-        info_layout.addWidget(self.duration_label)
+        self.duration_label.setStyleSheet(f"color: {COLORS['text_secondary']};")
+        details_layout.addWidget(self.duration_label)
         
-        quality_group = QGroupBox("الجودة")
-        quality_layout = QVBoxLayout(quality_group)
+        self.size_label = QLabel("الحجم: --")
+        self.size_label.setStyleSheet(f"color: {COLORS['text_secondary']};")
+        details_layout.addWidget(self.size_label)
         
-        self.quality_combo = QComboBox()
-        self.quality_combo.setStyleSheet("""
-            QComboBox {
-                background-color: #313244;
-                border: 1px solid #45475a;
-                border-radius: 8px;
-                padding: 12px;
-                color: #cdd6f4;
-                font-size: 14px;
-                min-height: 30px;
-            }
-            QComboBox::drop-down {
-                border: none;
-                width: 30px;
-            }
-            QComboBox::down-arrow {
-                image: url(down_arrow.png);
-                border-width: 0px;
-            }
-            QComboBox QAbstractItemView {
-                background-color: #313244;
-                color: #cdd6f4;
-                selection-background-color: #45475a;
-                border: 1px solid #45475a;
-            }
-        """)
+        self.format_label = QLabel("الصيغة: --")
+        self.format_label.setStyleSheet(f"color: {COLORS['accent']};")
+        details_layout.addWidget(self.format_label)
         
-        quality_layout.addWidget(self.quality_combo)
-        
-        info_layout.addWidget(quality_group)
+        details_layout.addStretch()
+        info_layout.addLayout(details_layout)
         
         main_layout.addWidget(self.info_frame)
         self.info_frame.hide()
         
-        save_group = QGroupBox("مجلد الحفظ")
-        save_layout = QHBoxLayout(save_group)
+        quality_label = QLabel("الجودة:")
+        quality_label.setStyleSheet(f"color: {COLORS['text_secondary']};")
+        main_layout.addWidget(quality_label)
         
-        self.save_path_input = QLineEdit()
-        self.save_path_input.setText(os.path.join(os.path.expanduser("~"), "Downloads"))
-        save_layout.addWidget(self.save_path_input, 1)
+        self.quality_scroll = QScrollArea()
+        self.quality_scroll.setFixedHeight(45)
+        self.quality_scroll.setStyleSheet("border: none;")
         
-        self.browse_btn = QPushButton("استعراض")
-        self.browse_btn.clicked.connect(self.browse_folder)
-        self.browse_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #45475a;
-                color: #cdd6f4;
-            }
-            QPushButton:hover {
-                background-color: #585b70;
-            }
+        self.quality_widget = QWidget()
+        self.quality_layout = QHBoxLayout(self.quality_widget)
+        self.quality_layout.setSpacing(8)
+        self.quality_layout.setContentsMargins(0, 0, 0, 0)
+        
+        self.quality_scroll.setWidget(self.quality_widget)
+        self.quality_scroll.setWidgetResizable(True)
+        self.quality_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        
+        main_layout.addWidget(self.quality_scroll)
+        
+        self.progress_frame = QFrame()
+        self.progress_frame.setStyleSheet(f"""
+            QFrame {{
+                background-color: {COLORS['card']};
+                border-radius: 12px;
+                padding: 15px;
+            }}
         """)
-        save_layout.addWidget(self.browse_btn)
-        
-        main_layout.addWidget(save_group)
-        
-        self.download_btn = QPushButton("تحميل")
-        self.download_btn.clicked.connect(self.start_download)
-        self.download_btn.setEnabled(False)
-        main_layout.addWidget(self.download_btn)
+        progress_layout = QVBoxLayout(self.progress_frame)
+        progress_layout.setSpacing(8)
         
         self.progress_bar = QProgressBar()
-        main_layout.addWidget(self.progress_bar)
+        progress_layout.addWidget(self.progress_bar)
         
-        status_layout = QHBoxLayout()
-        self.status_label = QLabel("جاهز")
-        status_layout.addWidget(self.status_label)
+        progress_info_layout = QHBoxLayout()
         
-        status_layout.addStretch()
+        self.percent_label = QLabel("0%")
+        self.percent_label.setStyleSheet(f"color: {COLORS['primary']}; font-weight: bold;")
+        progress_info_layout.addWidget(self.percent_label)
         
         self.speed_label = QLabel("")
-        status_layout.addWidget(self.speed_label)
+        self.speed_label.setStyleSheet(f"color: {COLORS['text_secondary']};")
+        progress_info_layout.addWidget(self.speed_label)
         
-        main_layout.addLayout(status_layout)
+        progress_info_layout.addStretch()
+        
+        self.time_label = QLabel("")
+        self.time_label.setStyleSheet(f"color: {COLORS['text_secondary']};")
+        progress_info_layout.addWidget(self.time_label)
+        
+        progress_layout.addLayout(progress_info_layout)
+        
+        main_layout.addWidget(self.progress_frame)
+        self.progress_frame.hide()
+        
+        download_layout = QHBoxLayout()
+        download_layout.setSpacing(12)
+        
+        self.download_btn = QPushButton("▶ تحميل")
+        self.download_btn.setEnabled(False)
+        self.download_btn.clicked.connect(self.start_download)
+        download_layout.addWidget(self.download_btn, 1)
+        
+        self.folder_btn = QPushButton("📁")
+        self.folder_btn.setFixedWidth(50)
+        self.folder_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {COLORS['card']};
+                color: {COLORS['text_secondary']};
+            }}
+            QPushButton:hover {{
+                background-color: {COLORS['border']};
+            }}
+        """)
+        self.folder_btn.clicked.connect(self.browse_folder)
+        download_layout.addWidget(self.folder_btn)
+        
+        main_layout.addLayout(download_layout)
+        
+        self.status_label = QLabel("جاهز للتحميل")
+        self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.status_label.setStyleSheet(f"color: {COLORS['text_secondary']}; font-size: 12px;")
+        main_layout.addWidget(self.status_label)
+        
+        main_layout.addStretch()
+        
+        nav_layout = QHBoxLayout()
+        nav_layout.setSpacing(20)
+        
+        self.home_btn = QPushButton("🏠")
+        self.home_btn.setFixedWidth(50)
+        self.home_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {COLORS['primary']};
+                color: {COLORS['text']};
+                border-radius: 25px;
+            }}
+        """)
+        nav_layout.addWidget(self.home_btn)
+        
+        self.history_btn = QPushButton("📥")
+        self.history_btn.setFixedWidth(50)
+        self.history_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {COLORS['card']};
+                color: {COLORS['text_secondary']};
+                border-radius: 25px;
+            }}
+        """)
+        self.history_btn.clicked.connect(self.go_history)
+        nav_layout.addWidget(self.history_btn)
+        
+        self.settings_btn = QPushButton("⚙️")
+        self.settings_btn.setFixedWidth(50)
+        self.settings_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {COLORS['card']};
+                color: {COLORS['text_secondary']};
+                border-radius: 25px;
+            }}
+        """)
+        self.settings_btn.clicked.connect(self.open_settings)
+        nav_layout.addWidget(self.settings_btn)
+        
+        main_layout.addLayout(nav_layout)
         
         self.create_menu_bar()
     
     def create_menu_bar(self):
         menubar = self.menuBar()
-        menubar.setStyleSheet("""
-            QMenuBar {
-                background-color: #1e1e2e;
-                color: #cdd6f4;
-            }
-            QMenuBar::item:selected {
-                background-color: #313244;
-            }
-            QMenu {
-                background-color: #313244;
-                color: #cdd6f4;
-                border: 1px solid #45475a;
-            }
-            QMenu::item:selected {
-                background-color: #45475a;
-            }
+        menubar.setStyleSheet(f"""
+            QMenuBar {{
+                background-color: {COLORS['background']};
+                color: {COLORS['text']};
+            }}
+            QMenuBar::item:selected {{
+                background-color: {COLORS['card']};
+            }}
+            QMenu {{
+                background-color: {COLORS['card']};
+                color: {COLORS['text']};
+                border: 1px solid {COLORS['border']};
+            }}
+            QMenu::item:selected {{
+                background-color: {COLORS['border']};
+            }}
         """)
         
         settings_action = QAction("الإعدادات", self)
@@ -301,12 +403,20 @@ class MainWindow(QMainWindow):
     def check_ffmpeg(self):
         available, ffmpeg_path, ffprobe_path = FFmpegChecker.check()
         if not available:
-            QMessageBox.warning(
+            msg = QMessageBox.warning(
                 self,
                 "FFmpeg غير موجود",
                 "يرجى تثبيت FFmpeg لتحميل الفيديوهات.<br>"
                 "تحميل من: <a href='https://ffmpeg.org/download.html'>ffmpeg.org</a>"
             )
+            msg.setTextFormat(Qt.TextFormat.RichText)
+    
+    def paste_url(self):
+        from PyQt6.QtGui import QGuiApplication
+        clipboard = QGuiApplication.clipboard()
+        url = clipboard.text()
+        if url:
+            self.url_input.setText(url)
     
     def analyze_video(self):
         url = self.url_input.text().strip()
@@ -334,92 +444,174 @@ class MainWindow(QMainWindow):
         self.video_info = info
         self.worker_thread.quit()
         
-        self.title_label.setText(f"العنوان: {info.get('title', '')}")
+        self.title_label.setText(info.get('title', 'غير معروف')[:60])
         
         duration = info.get('duration', 0)
         minutes = duration // 60
         seconds = duration % 60
         self.duration_label.setText(f"المدة: {minutes}:{seconds:02d}")
         
-        self.quality_combo.clear()
-        formats = info.get('formats', [])
+        filesize = info.get('filesize', 0)
+        if filesize > 1024 * 1024 * 1024:
+            self.size_label.setText(f"الحجم: {filesize / (1024**3):.1f} GB")
+        elif filesize > 1024 * 1024:
+            self.size_label.setText(f"الحجم: {filesize / (1024**2):.1f} MB")
+        elif filesize > 1024:
+            self.size_label.setText(f"الحجم: {filesize / 1024:.1f} KB")
+        else:
+            self.size_label.setText("الحجم: --")
         
-        quality_options = []
-        seen_heights = set()
+        self.format_label.setText(f"الصيغة: {info.get('ext', 'mp4')}")
         
-        for f in formats:
-            height = f.get('height', 0)
-            vcodec = f.get('vcodec', 'none')
-            
-            if height > 0 and vcodec != 'none' and height not in seen_heights:
-                seen_heights.add(height)
-                
-                if height >= 2160:
-                    label = "4K - Ultra HD"
-                elif height >= 1080:
-                    label = "1080p - Full HD"
-                elif height >= 720:
-                    label = "720p - HD"
-                elif height >= 480:
-                    label = "480p - SD"
-                else:
-                    label = f"{height}p"
-                
-                fid = f"{height}+bestaudio/best[height>={height}]"
-                quality_options.append((label, fid))
-        
-        quality_options.sort(key=lambda x: int(x[0].split('p')[0]) if x[0][0].isdigit() else 0, reverse=True)
-        
-        for label, fid in quality_options:
-            self.quality_combo.addItem(label, fid)
-        
-        if self.quality_combo.count() == 0:
-            self.quality_combo.addItem("الأفضل متاح", "best")
+        self._build_quality_buttons(info.get('formats', []))
         
         self.info_frame.show()
         self.download_btn.setEnabled(True)
-        self.status_label.setText("تم فحص الفيديو بنجاح")
+        self.status_label.setText("اختر الجودة ثم اضغط تحميل")
+        self.download_btn.setText("▶ تحميل")
         self.analyze_btn.setEnabled(True)
+    
+    def _build_quality_buttons(self, formats):
+        for i in reversed(range(self.quality_layout.count())):
+            widget = self.quality_layout.itemAt(i).widget()
+            if widget:
+                widget.deleteLater()
+        
+        seen = set()
+        quality_map = {}
+        button_colors = [COLORS['primary'], COLORS['accent'], COLORS['success'], '#FF9800', COLORS['error']]
+        
+        for idx, f in enumerate(formats):
+            format_id = f.get('format_id', '')
+            ext = f.get('ext', '')
+            height = f.get('height', 0)
+            filesize = f.get('filesize', 0)
+            
+            if format_id in seen:
+                continue
+            seen.add(format_id)
+            
+            if height > 0:
+                if height >= 2160:
+                    label = "4K"
+                elif height >= 1080:
+                    label = "FHD"
+                elif height >= 720:
+                    label = "HD"
+                elif height >= 480:
+                    label = "SD"
+                elif height >= 360:
+                    label = "360p"
+                else:
+                    label = f"{height}p"
+            elif ext == 'mp3' or ext == 'm4a':
+                label = "Mp3"
+            else:
+                label = ext.upper()
+            
+            if filesize > 0:
+                if filesize > 1024 * 1024 * 1024:
+                    size_str = f"{filesize / (1024**3):.1f}G"
+                elif filesize > 1024 * 1024:
+                    size_str = f"{filesize / (1024**2):.1f}M"
+                else:
+                    size_str = f"{filesize / 1024:.0f}K"
+                label += f" ({size_str})"
+            
+            quality_map[label] = format_id
+        
+        for idx, (label, format_id) in enumerate(quality_map.items()):
+            btn = QPushButton(label)
+            btn.setFixedWidth(80)
+            btn.setCursor(Qt.CursorShape.PointingHandCursor)
+            
+            color = button_colors[idx % len(button_colors)]
+            btn.setStyleSheet(f"""
+                QPushButton {{
+                    background-color: {color};
+                    color: {COLORS['text']};
+                    border: none;
+                    border-radius: 8px;
+                    padding: 8px 12px;
+                    font-size: 12px;
+                }}
+                QPushButton:hover {{
+                    opacity: 0.8;
+                }}
+            """)
+            
+            btn.format_id = format_id
+            btn.clicked=lambda clicked, fid=format_id, lbl=label: self._select_quality(fid, lbl)
+            
+            if idx == 0:
+                self.selected_format = format_id
+                self.selected_label = label
+            
+            self.quality_layout.addWidget(btn)
+        
+        if not quality_map:
+            btn = QPushButton("الأفضل")
+            btn.setFixedWidth(80)
+            btn.setStyleSheet(f"""
+                QPushButton {{
+                    background-color: {COLORS['primary']};
+                    color: {COLORS['text']};
+                    border: none;
+                    border-radius: 8px;
+                }}
+            """)
+            btn.format_id = "best"
+            btn.clicked=lambda clicked, fid="best", lbl="الأفضل": self._select_quality(fid, lbl)
+            self.quality_layout.addWidget(btn)
+            self.selected_format = "best"
+    
+    def _select_quality(self, format_id, label):
+        self.selected_format = format_id
+        self.selected_label = label
+        
+        for i in range(self.quality_layout.count()):
+            widget = self.quality_layout.itemAt(i).widget()
+            if widget and hasattr(widget, 'format_id'):
+                if widget.format_id == format_id:
+                    widget.setStyleSheet(f"""
+                        QPushButton {{
+                            background-color: {COLORS['primary']};
+                            color: {COLORS['text']};
+                            border: 2px solid {COLORS['accent']};
+                            border-radius: 8px;
+                            padding: 8px 12px;
+                            font-size: 12px;
+                        }}
+                    """)
+                else:
+                    widget.setStyleSheet(f"""
+                        QPushButton {{
+                            background-color: {COLORS['card']};
+                            color: {COLORS['text_secondary']};
+                            border: 1px solid {COLORS['border']};
+                            border-radius: 8px;
+                            padding: 8px 12px;
+                            font-size: 12px;
+                        }}
+                    """)
     
     def on_analyze_error(self, error):
         self.worker_thread.quit()
         QMessageBox.critical(self, "خطأ", str(error))
-        self.status_label.setText("فشل في فحص الفيديو")
+        self.status_label.setText(f"خطأ: {error}")
         self.analyze_btn.setEnabled(True)
-    
-    def quality_selected(self, button):
-        pass
     
     def browse_folder(self):
         folder = QFileDialog.getExistingDirectory(self, "اختر مجلد الحفظ")
         if folder:
-            self.save_path_input.setText(folder)
+            self.save_path = folder
     
     def start_download(self):
         if not self.video_info:
             return
         
-        if self.quality_combo.currentIndex() < 0:
-            QMessageBox.warning(self, "خطأ", "يرجى اختيار الجودة")
-            return
-        
-        selected_label = self.quality_combo.currentText()
-        
-        if "4K" in selected_label:
-            format_id = "bestvideo[height<=2160]+bestaudio/best[height<=2160]"
-        elif "1080" in selected_label:
-            format_id = "bestvideo[height<=1080]+bestaudio/best[height<=1080]"
-        elif "720" in selected_label:
-            format_id = "bestvideo[height<=720]+bestaudio/best[height<=720]"
-        elif "480" in selected_label:
-            format_id = "bestvideo[height<=480]+bestaudio/best[height<=480]"
-        elif selected_label.endswith("p"):
-            h = selected_label.split("p")[0]
-            format_id = f"bestvideo[height<={h}]+bestaudio/best[height<={h}]"
-        else:
-            format_id = "best"
-        
-        output_path = self.save_path_input.text()
+        format_id = self.selected_format or "best"
+        output_path = os.path.join(os.path.expanduser("~"), "Downloads")
         
         proxy = None
         if hasattr(self, 'proxy_combo') and self.proxy_combo.currentText():
@@ -441,33 +633,44 @@ class MainWindow(QMainWindow):
         
         self.download_thread.start()
         
-        self.download_btn.setText("إلغاء")
+        self.download_btn.setText("⏹ إيقاف")
+        self.download_btn.clicked.disconnect()
         self.download_btn.clicked.connect(self.cancel_download)
         self.status_label.setText("جاري التحميل...")
+        
+        self.progress_frame.show()
     
     def on_download_progress(self, percent, speed, filename):
         self.progress_bar.setValue(int(percent))
-        self.speed_label.setText(f"السرعة: {speed}")
+        self.percent_label.setText(f"{int(percent)}%")
+        self.speed_label.setText(speed)
+        self.status_label.setText(f"جاري التحميل... {int(percent)}%")
     
     def on_download_finished(self, filepath, title):
         self.progress_bar.setValue(100)
-        self.status_label.setText("تم التحميل بنجاح")
-        self.download_btn.setText("تحميل")
+        self.percent_label.setText("100%")
+        self.status_label.setText("تم التحميل بنجاح!")
+        self.download_btn.setText("▶ تحميل")
+        self.download_btn.clicked.disconnect()
         self.download_btn.clicked.connect(self.start_download)
         self.download_btn.setEnabled(True)
+        
+        self.progress_frame.hide()
         
         QMessageBox.information(
             self,
             "تم التحميل",
-            f"تم تحميل الفيديو بنجاح<br>{title}"
+            f"تم تحميل الفيديو بنجاح\n{title}"
         )
     
     def on_download_error(self, error):
-        self.progress_bar.setValue(0)
-        self.status_label.setText("فشل في التحميل")
-        self.download_btn.setText("تحميل")
+        self.status_label.setText(f"خطأ: {error}")
+        self.download_btn.setText("▶ تحميل")
+        self.download_btn.clicked.disconnect()
         self.download_btn.clicked.connect(self.start_download)
         self.download_btn.setEnabled(True)
+        
+        self.progress_frame.hide()
         
         QMessageBox.critical(self, "خطأ", str(error))
     
@@ -476,8 +679,16 @@ class MainWindow(QMainWindow):
             self.download_thread.cancel()
             self.status_label.setText("تم الإلغاء")
             self.progress_bar.setValue(0)
-            self.download_btn.setText("تحميل")
+            self.download_btn.setText("▶ تحميل")
+            self.download_btn.clicked.disconnect()
             self.download_btn.clicked.connect(self.start_download)
+            self.download_btn.setEnabled(True)
+            self.progress_frame.hide()
+    
+    def go_history(self):
+        from gui.history_dialog import HistoryDialog
+        dialog = HistoryDialog(self)
+        dialog.exec()
     
     def open_settings(self):
         from gui.settings_dialog import SettingsDialog
@@ -506,6 +717,11 @@ class VideoInfoWorker(QThread):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
+    
+    palette = QPalette()
+    palette.setColor(QPalette.ColorRole.Window, QColor(COLORS['background']))
+    palette.setColor(QPalette.ColorRole.WindowText, QColor(COLORS['text']))
+    app.setPalette(palette)
     
     window = MainWindow()
     window.show()
