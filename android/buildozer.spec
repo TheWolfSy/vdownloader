@@ -5,11 +5,12 @@ package.name = vdownloader
 package.domain = org.vdownloader
 
 source.dir = ..
+source.include_dirs = gui,core,utils
 source.include_exts = py,png,jpg,kv,atlas
 
 version = 1.0.0
 
-requirements = python3,kivy>=2.3.0,yt-dlp,requests,jnius,plyer,android-sqlite
+requirements = python3,kivy,yt-dlp,requests,jnius,plyer
 
 orientation = portrait
 

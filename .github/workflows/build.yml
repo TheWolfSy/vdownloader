@@ -25,31 +25,33 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
     
+    - name: Cache Android SDK
+      uses: actions/cache@v4
+      with:
+        path: ~/android-sdk
+        key: android-sdk-${{ runner.os }}-v1
+    
     - name: Install system dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y unzip wget
-        echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
-        echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
     
-    - name: Download Android SDK
+    - name: Setup Android SDK
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
-        mkdir -p $HOME/android-sdk/cmdline-tools
-        cd $HOME/android-sdk/cmdline-tools
+        mkdir -p ~/android-sdk/cmdline-tools
+        cd ~/android-sdk/cmdline-tools
         wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
         unzip -q cmdline-tools.zip
         mv cmdline-tools latest
-        yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
-        $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "ndk;26a"
+        yes | ~/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
+        ~/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34"
     
     - name: Install Buildozer
       run: |
-        pip install --upgrade pip setuptools wheel
-        pip install buildozer==1.5.0
-    
-    - name: Install Kivy
-      run: |
-        pip install "kivy>=2.3.0"
+        pip install --upgrade pip
+        pip install buildozer
+        pip install kivy
     
     - name: Build with Buildozer
       working-directory: ./android
