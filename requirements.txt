@@ -1,0 +1,17 @@
+yt-dlp>=2023.12.30
+requests>=2.31.0
+flask>=3.0.0
+flask-cors>=4.0.0
+
+# GUI - Desktop
+PyQt6>=6.6.0
+
+# GUI - Android
+kivy>=2.3.0
+
+# Android specific
+jnius>=1.6.0
+plyer>=2.1.0
+
+# Background downloads (Android)
+android-sqlite>=2.6.0
