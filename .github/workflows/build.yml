@@ -8,62 +8,33 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Build Android APK using Kivy Docker
+      uses: docker/build-push-action@v5
       with:
-        python-version: '3.10'
+        context: .
+        file: ./Dockerfile
+        push: false
+        load: true
+        tags: vdownloader:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
     
-    - name: Set up JDK
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-    
-    - name: Install system dependencies
+    - name: Run container and extract APK
       run: |
-        sudo apt-get update
-        sudo apt-get install -y unzip wget
-    
-    - name: Setup Android SDK
-      run: |
-        mkdir -p $HOME/android-sdk/cmdline-tools
-        cd $HOME/android-sdk/cmdline-tools
-        wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
-        unzip -q cmdline-tools.zip
-        mv cmdline-tools latest
-        yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
-        $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
-        echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-        
-        # Create proper directory structure for Buildozer
-        mkdir -p /home/runner/.buildozer/android/platform/android-sdk/tools/bin
-        ln -sf /home/runner/android-sdk/cmdline-tools/latest/bin/sdkmanager /home/runner/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
-        ln -sf /home/runner/android-sdk/build-tools /home/runner/.buildozer/android/platform/android-sdk/build-tools
-        ln -sf /home/runner/android-sdk/platforms /home/runner/.buildozer/android/platform/android-sdk/platforms
-        ln -sf /home/runner/android-sdk/platform-tools /home/runner/.buildozer/android/platform/android-sdk/platform-tools
-    
-    - name: Install Buildozer and Kivy
-      run: |
-        pip install --upgrade pip
-        pip install cython
-        pip install buildozer
-        pip install kivy
-    
-    - name: Build with Buildozer
-      working-directory: ./android
-      run: |
-        export ANDROID_HOME=/home/runner/android-sdk
-        buildozer android debug
-        ls -la bin/
+        docker run --rm -v $PWD/output:/output vdownloader:latest cp /root/.buildozer/bin/*.apk /output/
+        ls -la output/
     
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: VDownloader-APK
-        path: android/bin/*.apk
+        path: output/*.apk
