@@ -4,35 +4,35 @@
 
 # 🐺 vdownloader
 
-تنزيل فيديوهات YouTube بجودة عالية - تطبيق ويب + تطبيق موبايل (Capacitor) + خادم Node.js
+Download YouTube videos in high quality — Web app + Mobile app (Capacitor) + Node.js server
 
-## 🌟 المميزات
+## 🌟 Features
 
-- **تنزيل الفيديو** بجودات متعددة (1080p, 720p, 480p, audio only)
-- **واجهة ويب** (Flask) للاستخدام من المتصفح
-- **تطبيق موبايل** (Capacitor) لنظامي Android و iOS
-- **خادم Node.js** سريع يعمل محلياً على الهاتف (عبر Termux)
-- **دعم البروكسي** للاتصال عبر VPN/Proxy
-- **تصديم داكن** أنيق وعصري
+- **Download video** in multiple qualities (1080p, 720p, 480p, audio only)
+- **Web interface** (Flask) for desktop browsers
+- **Mobile app** (Capacitor) for Android & iOS
+- **Local Node.js server** runs on your phone via Termux
+- **Proxy support** for VPN/Proxy connections
+- **Dark theme** — modern and sleek
 
-## 📁 هيكل المشروع
+## 📁 Project Structure
 
 ```
 vdownloader/
-├── mobile-app/               # تطبيق Capacitor (Android/iOS)
-│   ├── www/                  # واجهة Vanilla JS
+├── mobile-app/               # Capacitor app (Android/iOS)
+│   ├── www/                  # Vanilla JS frontend
 │   │   ├── index.html
 │   │   ├── app.js
 │   │   └── styles.css
-│   ├── android/              # مشروع Android الأصلي
-│   ├── capacitor.config.json # إعدادات Capacitor
-│   └── package.json          # تبعيات npm
+│   ├── android/              # Native Android project
+│   ├── capacitor.config.json # Capacitor configuration
+│   └── package.json          # npm dependencies
 │
-├── server/                   # خادم Node.js (Express + ytdl-core)
-│   ├── server.js             # نقطة الدخول
+├── server/                   # Node.js server (Express + ytdl-core)
+│   ├── server.js             # Entry point
 │   └── package.json
 │
-├── web_app/                  # تطبيق ويب Flask (قديم)
+├── web_app/                  # Flask web app (legacy)
 │   ├── app.py
 │   └── static/
 │       ├── index.html
@@ -41,9 +41,9 @@ vdownloader/
 └── README.md
 ```
 
-## 🚀 التشغيل
+## 🚀 Getting Started
 
-### تطبيق الويب (Flask)
+### Flask Web App
 
 ```bash
 cd web_app
@@ -51,7 +51,7 @@ pip install -r ../requirements.txt
 python app.py
 ```
 
-### الخادم (Node.js) - للاستخدام مع تطبيق الموبايل
+### Node.js Server (for mobile app)
 
 ```bash
 cd server
@@ -59,7 +59,7 @@ npm install
 node server.js
 ```
 
-### تطبيق الموبايل (Capacitor)
+### Capacitor Mobile App
 
 ```bash
 cd mobile-app
@@ -68,26 +68,26 @@ npx cap sync android
 npx cap open android
 ```
 
-## 📱 الاستخدام على الهاتف
+## 📱 Usage on Phone
 
-1. افتح **Termux** على Android
-2. شغل خادم Node.js:
+1. Open **Termux** on Android
+2. Start the Node.js server:
    ```bash
    cd server
    node server.js
    ```
-3. افتح تطبيق vdownloader - سيتصل تلقائياً بـ `localhost:3000`
+3. Open the vdownloader app — it auto‑connects to `localhost:3000`
 
-## 🔧 التقنيات المستخدمة
+## 🔧 Tech Stack
 
-| التقنية | الاستخدام |
-|---------|-----------|
-| **Capacitor** | تطبيق الموبايل (Android/iOS) |
-| **Node.js + Express** | خادم API للتنزيل |
-| **ytdl-core** | تنزيل فيديوهات YouTube |
-| **Vanilla JS** | واجهة المستخدم |
-| **Flask (قديم)** | تطبيق الويب الأصلي |
+| Tech | Purpose |
+|------|---------|
+| **Capacitor** | Mobile app (Android / iOS) |
+| **Node.js + Express** | Download API server |
+| **ytdl-core** | YouTube video download |
+| **Vanilla JS** | User interface |
+| **Flask (legacy)** | Original web app |
 
-## 📄 الترخيص
+## 📄 License
 
 MIT License
