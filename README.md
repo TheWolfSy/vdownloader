@@ -68,6 +68,15 @@ npx cap sync android
 npx cap open android
 ```
 
+## 📦 Releases
+
+| Version | Date | Link |
+|---------|------|------|
+| **v1.0.0** — Initial Release | 2026-05-13 | [Download APK](https://github.com/TheWolfSy/vdownloader/releases/tag/v1.0.0) |
+
+Includes Android APK (`vdownloader-v1.0.0.apk`) for sideloading.  
+[View all releases →](https://github.com/TheWolfSy/vdownloader/releases)
+
 ## 📱 Usage on Phone
 
 1. Open **Termux** on Android
