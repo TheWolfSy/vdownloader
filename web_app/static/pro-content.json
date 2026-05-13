@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "headline": "Unleash the Ultra Experience",
+    "subtitle": "Upgrade to vdownloader Pro"
+  },
+  "features": [
+    { "name": "Download Speed", "free": "Standard", "pro": "3x Faster (Multi-threading)" },
+    { "name": "Video Quality", "free": "Up to 1080p", "pro": "4K, 8K, HDR" },
+    { "name": "Batch Downloads", "free": "Single Only", "pro": "Playlists & Channels" },
+    { "name": "Ads", "free": "With Ads", "pro": "Ad-Free" },
+    { "name": "Updates", "free": "Limited", "pro": "Lifetime Updates" }
+  ],
+  "pricing": {
+    "monthly": { "label": "Monthly Support", "price": "$2.99", "period": "/mo" },
+    "lifetime": { "label": "Lifetime Access", "price": "$14.99", "period": "One-time payment", "recommended": true }
+  },
+  "cta": { "text": "Upgrade Now" }
+}

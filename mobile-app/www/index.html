@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>vdownloader</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 60" width="200" height="40">
+                <defs>
+                    <linearGradient id="logoGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                        <stop offset="0%" style="stop-color:#BB9AF7;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#FF9E64;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <path d="M 8 48 L 30 8 L 52 48" fill="none" stroke="url(#logoGrad)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M48 18 Q55 8 65 12 Q72 14 75 20 L78 18" fill="none" stroke="url(#logoGrad)" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M65 12 Q68 10 70 14 Q72 18 75 20" fill="none" stroke="url(#logoGrad)" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M65 12 L68 4 L72 12" fill="url(#logoGrad)" stroke="url(#logoGrad)" stroke-width="1.5"/>
+                <ellipse cx="73" cy="19" rx="3" ry="2" fill="#FF9E64"/>
+                <ellipse cx="73" cy="19" rx="1.5" ry="1.5" fill="#BB9AF7"/>
+                <path d="M75 20 L80 22 Q82 24 80 26 L76 25" fill="none" stroke="url(#logoGrad)" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="80" cy="24" r="1.5" fill="#FF9E64"/>
+                <path d="M76 25 Q72 30 68 32 L60 30 Q55 28 52 48" fill="none" stroke="url(#logoGrad)" stroke-width="2.5" stroke-linecap="round"/>
+                <text x="92" y="38" font-family="Segoe UI, Tahoma, sans-serif" font-size="22" font-weight="bold" letter-spacing="3" fill="url(#logoGrad)">vdownloader</text>
+            </svg>
+        </div>
+
+        <div class="input-group">
+            <label for="videoUrl">رابط الفيديو</label>
+            <input type="url" id="videoUrl" placeholder="https://youtube.com/watch?v=..." />
+        </div>
+
+        <div class="input-group">
+            <label for="proxy">البروكسي (اختياري)</label>
+            <input type="text" id="proxy" placeholder="http://proxy:port" />
+        </div>
+
+        <button class="btn-primary" id="getInfoBtn">جلب المعلومات</button>
+
+        <div class="loader" id="loader">
+            <div class="spinner"></div>
+            <p>جاري جلب المعلومات...</p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="video-info" id="videoInfo">
+            <div class="video-title" id="videoTitle"></div>
+            <div class="video-details" id="videoDetails"></div>
+
+            <label>اختر الجودة:</label>
+            <div class="formats-list" id="formatsList"></div>
+
+            <button class="btn-primary download-btn" id="downloadBtn">تحميل</button>
+        </div>
+
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">جاري التحميل... 0%</div>
+        </div>
+
+        <div class="pro-upgrade-trigger">
+            <button class="btn-secondary" id="openProModal">⚡ ترقية للنسخة المدفوعة</button>
+        </div>
+    </div>
+</body>
+</html>

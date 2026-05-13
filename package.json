@@ -1,0 +1,9 @@
+{
+  "name": "local-open-url",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local page loader: open any URL in an iframe served by a tiny npm-driven static server",
+  "scripts": {
+    "start": "npx http-server -p 8080"
+  }
+}

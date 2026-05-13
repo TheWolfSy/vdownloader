@@ -1,269 +1,102 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VDownloader - تحميل الفيديو</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        .container {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            width: 100%;
-            max-width: 600px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        h1 {
-            color: #fff;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2em;
-        }
-        
-        .input-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            color: #aaa;
-            margin-bottom: 8px;
-            font-size: 0.9em;
-        }
-        
-        input[type="url"], select {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            font-size: 1em;
-            transition: all 0.3s;
-        }
-        
-        input[type="url"]:focus, select:focus {
-            outline: none;
-            border-color: #00d4ff;
-        }
-        
-        button {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
-            color: #fff;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
-        }
-        
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .video-info {
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            display: none;
-        }
-        
-        .video-info.show {
-            display: block;
-        }
-        
-        .video-title {
-            color: #fff;
-            font-size: 1.2em;
-            margin-bottom: 15px;
-        }
-        
-        .video-details {
-            color: #aaa;
-            margin-bottom: 15px;
-            font-size: 0.9em;
-        }
-        
-        .formats-list {
-            max-height: 200px;
-            overflow-y: auto;
-            margin-bottom: 15px;
-        }
-        
-        .format-item {
-            padding: 12px;
-            margin-bottom: 8px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .format-item:hover {
-            background: rgba(0, 212, 255, 0.2);
-        }
-        
-        .format-item.selected {
-            background: rgba(0, 212, 255, 0.3);
-            border: 2px solid #00d4ff;
-        }
-        
-        .format-info {
-            color: #fff;
-        }
-        
-        .format-size {
-            color: #aaa;
-            font-size: 0.85em;
-        }
-        
-        .progress-container {
-            margin-top: 20px;
-            display: none;
-        }
-        
-        .progress-container.show {
-            display: block;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
-            width: 0%;
-            transition: width 0.3s;
-        }
-        
-        .progress-text {
-            color: #aaa;
-            text-align: center;
-            margin-top: 10px;
-        }
-        
-        .error {
-            color: #ff4444;
-            text-align: center;
-            margin-top: 15px;
-        }
-        
-        .success {
-            color: #00ff88;
-            text-align: center;
-            margin-top: 15px;
-        }
-        
-        .loader {
-            display: none;
-            text-align: center;
-            margin: 20px 0;
-        }
-        
-        .loader.show {
-            display: block;
-        }
-        
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(0, 212, 255, 0.3);
-            border-top-color: #00d4ff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .download-btn {
-            margin-top: 15px;
-            background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
-        }
-        
-        .download-btn:hover {
-            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
-        }
-    </style>
+    <title>vdownloader</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/theme.css">
 </head>
 <body>
     <div class="container">
-        <h1>⬇️ تحميل الفيديو</h1>
-        
+        <div class="logo-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 60" width="320" height="60">
+                <defs>
+                    <linearGradient id="logoGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                        <stop offset="0%" style="stop-color:#BB9AF7;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#FF9E64;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <!-- Geometric V (bold, angular) -->
+                <path d="M 8 48 L 30 8 L 52 48" fill="none" stroke="url(#logoGrad)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+                <!-- Wolf Head Profile (line-art style) -->
+                <path d="M 48 18 Q 55 8 65 12 Q 72 14 75 20 L 78 18" fill="none" stroke="url(#logoGrad)" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M 65 12 Q 68 10 70 14 Q 72 18 75 20" fill="none" stroke="url(#logoGrad)" stroke-width="2.5" stroke-linecap="round"/>
+                <!-- Ear -->
+                <path d="M 65 12 L 68 4 L 72 12" fill="url(#logoGrad)" stroke="url(#logoGrad)" stroke-width="1.5"/>
+                <!-- Eye -->
+                <ellipse cx="73" cy="19" rx="3" ry="2" fill="#FF9E64"/>
+                <ellipse cx="73" cy="19" rx="1.5" ry="1.5" fill="#BB9AF7"/>
+                <!-- Snout/nose -->
+                <path d="M 75 20 L 80 22 Q 82 24 80 26 L 76 25" fill="none" stroke="url(#logoGrad)" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="80" cy="24" r="1.5" fill="#FF9E64"/>
+                <!-- Jaw line -->
+                <path d="M 76 25 Q 72 30 68 32 L 60 30 Q 55 28 52 48" fill="none" stroke="url(#logoGrad)" stroke-width="2.5" stroke-linecap="round"/>
+                <!-- Fur detail lines -->
+                <path d="M 68 14 L 66 18" stroke="url(#logoGrad)" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M 70 16 L 69 20" stroke="url(#logoGrad)" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M 62 28 L 60 32" stroke="url(#logoGrad)" stroke-width="1.5" stroke-linecap="round"/>
+                <!-- Text: vdownloader -->
+                <text x="92" y="38" font-family="Segoe UI, Tahoma, sans-serif" font-size="22" font-weight="bold" letter-spacing="3" fill="url(#logoGrad)">vdownloader</text>
+            </svg>
+        </div>
+
         <div class="input-group">
-            <label for="videoUrl">رابط الفيديو</label>
+            <label for="videoUrl">Video URL</label>
             <input type="url" id="videoUrl" placeholder="https://youtube.com/watch?v=..." />
         </div>
-        
+
         <div class="input-group">
-            <label for="proxy">بروكي (اختياري)</label>
+            <label for="proxy">Proxy (optional)</label>
             <input type="text" id="proxy" placeholder="http://proxy:port" />
         </div>
-        
-        <button id="getInfoBtn" onclick="getVideoInfo()">جلب المعلومات</button>
-        
+
+        <button class="btn-primary" id="getInfoBtn" onclick="getVideoInfo()">Get Info</button>
+
         <div class="loader" id="loader">
             <div class="spinner"></div>
-            <p style="color: #aaa; margin-top: 10px;">جاري جلب المعلومات...</p>
+            <p style="color: var(--text-secondary); margin-top: 10px;">Fetching info...</p>
         </div>
-        
+
         <div class="error" id="error"></div>
-        
+
         <div class="video-info" id="videoInfo">
             <div class="video-title" id="videoTitle"></div>
             <div class="video-details" id="videoDetails"></div>
-            
-            <label>اختر الجودة:</label>
+
+            <label>Select Quality:</label>
             <div class="formats-list" id="formatsList"></div>
-            
-            <button class="download-btn" id="downloadBtn" onclick="startDownload()">تحميل الفيديو</button>
+
+            <button class="btn-primary download-btn" id="downloadBtn" onclick="startDownload()">Download</button>
         </div>
-        
+
         <div class="progress-container" id="progressContainer">
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
-            <div class="progress-text" id="progressText">جاري التحميل... 0%</div>
+            <div class="progress-text" id="progressText">Downloading... 0%</div>
+        </div>
+
+        <div class="pro-upgrade-trigger">
+            <button class="btn-secondary" id="openProModal">⚡ Upgrade to Pro</button>
+        </div>
+    </div>
+
+    <div class="pro-modal-overlay" id="proModal">
+        <div class="pro-modal-card">
+            <button class="pro-modal-close" id="closeProModal">✕</button>
+            <div class="pro-header">
+                <div class="pro-wolf-icon" id="wolfIcon"></div>
+                <h1 class="pro-headline" id="proHeadline"></h1>
+                <p class="pro-subtitle" id="proSubtitle"></p>
+            </div>
+            <div class="pro-comparison-cards" id="comparisonCards"></div>
+            <div class="pro-pricing" id="pricingContainer"></div>
+            <button class="pro-cta-button" id="upgradeBtn">
+                <span id="ctaText"></span>
+            </button>
         </div>
     </div>
     
@@ -277,38 +110,38 @@
             document.getElementById('error').textContent = msg;
             document.getElementById('loader').classList.remove('show');
         }
-        
+
         function clearError() {
             document.getElementById('error').textContent = '';
         }
-        
+
         async function getVideoInfo() {
             clearError();
             const url = document.getElementById('videoUrl').value.trim();
             const proxy = document.getElementById('proxy').value.trim();
-            
+
             if (!url) {
-                showError('الرجاء إدخال رابط الفيديو');
+                showError('Please enter a video URL');
                 return;
             }
-            
+
             document.getElementById('loader').classList.add('show');
             document.getElementById('getInfoBtn').disabled = true;
             document.getElementById('videoInfo').classList.remove('show');
-            
+
             try {
                 const response = await fetch('/api/info', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({url, proxy})
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (!response.ok) {
-                    throw new Error(data.error || 'حدث خطأ');
+                    throw new Error(data.error || 'An error occurred');
                 }
-                
+
                 displayVideoInfo(data);
             } catch (e) {
                 showError(e.message);
@@ -317,41 +150,41 @@
                 document.getElementById('getInfoBtn').disabled = false;
             }
         }
-        
+
         function displayVideoInfo(info) {
             document.getElementById('videoTitle').textContent = info.title;
-            
+
             const duration = info.duration;
             const minutes = Math.floor(duration / 60);
             const seconds = duration % 60;
-            document.getElementById('videoDetails').textContent = 
-                `المدة: ${minutes}:${seconds.toString().padStart(2, '0')} | الرافع: ${info.uploader}`;
-            
+            document.getElementById('videoDetails').textContent =
+                `Duration: ${minutes}:${seconds.toString().padStart(2, '0')} | Uploader: ${info.uploader}`;
+
             currentFormats = info.formats;
             const formatsList = document.getElementById('formatsList');
             formatsList.innerHTML = '';
-            
+
             info.formats.forEach((format, index) => {
                 const item = document.createElement('div');
                 item.className = 'format-item';
                 item.dataset.index = index;
-                
+
                 const size = format.filesize > 0 ? format.filesize / (1024 * 1024) : 0;
-                const sizeStr = size > 0 ? `${size.toFixed(1)} MB` : 'حجم غير معروف';
-                
+                const sizeStr = size > 0 ? `${size.toFixed(1)} MB` : 'Unknown size';
+
                 item.innerHTML = `
                     <div class="format-info">${format.height}p (${format.ext})</div>
                     <div class="format-size">${sizeStr}</div>
                 `;
-                
+
                 item.onclick = () => selectFormat(index);
                 formatsList.appendChild(item);
             });
-            
+
             if (currentFormats.length > 0) {
                 selectFormat(0);
             }
-            
+
             document.getElementById('videoInfo').classList.add('show');
         }
         
@@ -366,16 +199,16 @@
         async function startDownload() {
             const url = document.getElementById('videoUrl').value.trim();
             const proxy = document.getElementById('proxy').value.trim();
-            
+
             if (!selectedFormat) {
-                showError('الرجاء اختيار الجودة');
+                showError('Please select a quality');
                 return;
             }
-            
+
             document.getElementById('videoInfo').classList.remove('show');
             document.getElementById('progressContainer').classList.add('show');
             clearError();
-            
+
             try {
                 const response = await fetch('/api/download', {
                     method: 'POST',
@@ -386,13 +219,13 @@
                         proxy
                     })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (!response.ok) {
-                    throw new Error(data.error || 'حدث خطأ');
+                    throw new Error(data.error || 'An error occurred');
                 }
-                
+
                 taskId = data.task_id;
                 pollProgress();
             } catch (e) {
@@ -400,26 +233,26 @@
                 document.getElementById('progressContainer').classList.remove('show');
             }
         }
-        
+
         function pollProgress() {
             pollInterval = setInterval(async () => {
                 try {
                     const response = await fetch(`/api/status/${taskId}`);
                     const data = await response.json();
-                    
+
                     const percent = data.progress?.percent || 0;
                     document.getElementById('progressFill').style.width = `${percent}%`;
-                    document.getElementById('progressText').textContent = 
-                        `جاري التحميل... ${Math.round(percent)}%`;
-                    
+                    document.getElementById('progressText').textContent =
+                        `Downloading... ${Math.round(percent)}%`;
+
                     if (data.status === 'ready') {
                         clearInterval(pollInterval);
                         document.getElementById('progressFill').style.width = '100%';
-                        document.getElementById('progressText').textContent = 'جاري تحميل الفيديو...';
+                        document.getElementById('progressText').textContent = 'Downloading video...';
                         downloadFile();
                     } else if (data.status === 'error') {
                         clearInterval(pollInterval);
-                        showError(data.progress?.error || 'حدث خطأ في التحميل');
+                        showError(data.progress?.error || 'Download failed');
                     }
                 } catch (e) {
                     clearInterval(pollInterval);
@@ -427,15 +260,15 @@
                 }
             }, 1000);
         }
-        
+
         async function downloadFile() {
             try {
                 const response = await fetch(`/api/stream/${taskId}`);
-                
+
                 if (!response.ok) {
-                    throw new Error('فشل في تحميل الفيديو');
+                    throw new Error('Failed to download video');
                 }
-                
+
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -445,12 +278,105 @@
                 a.click();
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
-                
-                document.getElementById('progressText').textContent = 'تم التحميل بنجاح!';
+
+                document.getElementById('progressText').textContent = 'Download complete!';
             } catch (e) {
                 showError(e.message);
             }
         }
+
+        /* ===================== PRO UPGRADE MODAL ===================== */
+        let proContent = null;
+
+        async function loadProContent() {
+            if (proContent) return proContent;
+            try {
+                const res = await fetch('/static/pro-content.json');
+                proContent = await res.json();
+                return proContent;
+            } catch (e) {
+                console.error('Failed to load pro content:', e);
+                return null;
+            }
+        }
+
+        async function populateProModal() {
+            const content = await loadProContent();
+            if (!content) return;
+
+            document.getElementById('proHeadline').textContent = content.meta.headline;
+            document.getElementById('proSubtitle').textContent = content.meta.subtitle;
+
+            document.getElementById('wolfIcon').innerHTML = `
+                <svg viewBox="0 0 80 60" width="60" height="60" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="proGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                            <stop offset="0%" style="stop-color:#BB9AF7;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#FF9E64;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M8 48 L30 8 L52 48" fill="none" stroke="url(#proGrad)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M48 18 Q55 8 65 12 Q72 14 75 20 L78 18" fill="none" stroke="url(#proGrad)" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M65 12 Q68 10 70 14 Q72 18 75 20" fill="none" stroke="url(#proGrad)" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M65 12 L68 4 L72 12" fill="url(#proGrad)" stroke="url(#proGrad)" stroke-width="1.5"/>
+                    <ellipse cx="73" cy="19" rx="3" ry="2" fill="#FF9E64"/>
+                    <ellipse cx="73" cy="19" rx="1.5" ry="1.5" fill="#BB9AF7"/>
+                    <path d="M75 20 L80 22 Q82 24 80 26 L76 25" fill="none" stroke="url(#proGrad)" stroke-width="2.5" stroke-linecap="round"/>
+                    <circle cx="80" cy="24" r="1.5" fill="#FF9E64"/>
+                    <path d="M76 25 Q72 30 68 32 L60 30 Q55 28 52 48" fill="none" stroke="url(#proGrad)" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>`;
+
+            const cardsContainer = document.getElementById('comparisonCards');
+            cardsContainer.innerHTML = '';
+            content.features.forEach(f => {
+                const card = document.createElement('div');
+                card.className = 'pro-comparison-card';
+                card.innerHTML = `
+                    <div class="feature-name">${f.name}</div>
+                    <div class="free-version">
+                        <span class="feature-icon">❌</span>
+                        <span class="feature-text">${f.free}</span>
+                    </div>
+                    <div class="pro-version">
+                        <span class="feature-icon">✅</span>
+                        <span class="feature-text">${f.pro}</span>
+                    </div>`;
+                cardsContainer.appendChild(card);
+            });
+
+            const pricing = document.getElementById('pricingContainer');
+            pricing.innerHTML = '';
+            Object.values(content.pricing).forEach(t => {
+                const card = document.createElement('div');
+                card.className = `pro-pricing-card ${t.recommended ? 'recommended' : ''}`;
+                card.innerHTML = `
+                    ${t.recommended ? '<div class="recommended-badge">Recommended</div>' : ''}
+                    <div class="pricing-label">${t.label}</div>
+                    <div class="pricing-price">${t.price}</div>
+                    <div class="pricing-period">${t.period}</div>`;
+                pricing.appendChild(card);
+            });
+
+            document.getElementById('ctaText').textContent = content.cta.text;
+        }
+
+        function openProModal() {
+            populateProModal();
+            document.getElementById('proModal').classList.add('active');
+        }
+
+        function closeProModal() {
+            document.getElementById('proModal').classList.remove('active');
+        }
+
+        document.getElementById('openProModal').addEventListener('click', openProModal);
+        document.getElementById('closeProModal').addEventListener('click', closeProModal);
+        document.getElementById('proModal').addEventListener('click', e => {
+            if (e.target === document.getElementById('proModal')) closeProModal();
+        });
+        document.getElementById('upgradeBtn').addEventListener('click', () => {
+            alert('Upgrade functionality would be implemented here!');
+        });
     </script>
 </body>
 </html>
